@@ -5,6 +5,14 @@ cwd = os.getcwd() #get current working directory
 
 import arcpy
 import csv
+
+# Display program purpose
+print("California Home Natural Disaster Danger Index Calculator")
+print("Use this program to calculate a Danger Index for Earthquake, Fire and Flood risk at your location(s) in California")
+print()
+print('************************************************************************************************') 
+print()
+
 # Kacy - Data Input
 print("Please choose method of input: manual entry or by input file.")
 inputSelection= str(input("\tEnter 'M' for manual or 'F' for file: "))
