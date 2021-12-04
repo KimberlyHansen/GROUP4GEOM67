@@ -3,7 +3,7 @@ def indexcalc(point, weights):
     # Assumes that if a point has no data for a specific criteria, that criteria's value will equal -1, otherwise assumes criteria value are standardized.
     holdweight = 0 # Set variable to hold weight to be redistributed where values are empty
     for iter in range(len(point)):                              # Iterate over criteria values to check for any missing data, and add weighting for that missing data to holdweight to be redistributed
-        if point[iter] == -1:
+        if point[iter] == 0:
             holdweight+= weights[iter]
             weights[iter] = 0                                   # Set weight for missing data to 0
     denominator = len(weights) - weights.count(0)               # Calculate the number of criteria to redistribute weight into, then divides holdweight by that amount
@@ -172,21 +172,17 @@ def main():
         outval.append(point[1])                                     # Append point coordinates
         if point[2] == -1:                                          # Check if point was in California, append message if not.
             outval.append('Not in California')
-        else:                                                       # Calculate danger index value for points within California
-            if point[3] != -1:
-                outval.append(round((float(point[3]) / 3) * 10))    # Converts fire risk value to value out of 10
-            else:
-                outval.append(-1)
-            if point [4] != -1:
-                outval.append(round((float(point[4]) / 2.15) * 10))     # Converts earthquake risk value to value out of 10
-            else:
-                outval.append(-1)
-            if point[5] == 2:                                       # Returns 10 if point within flood plain, returns 0 if not.
+        else:                                                       # Standardize criteria values for each risk:
+            # Identity returns areas where there is no data as '0', which are kept as 0 with the following formulas
+            outval.append(round((float(point[3]) / 3) * 10))        # Converts fire risk value to value out of 10
+            outval.append(round((float(point[4]) / 2.15) * 10))     # Converts earthquake risk value to value out of 10
+            outval.append(-1)
+            if point[5] == 2:                                       # Returns 10 if point within flood plain, returns 1 if not.
                 outval.append(10)
             elif point[5] == 1:
-                outval.append(0)
+                outval.append(1)                                    
             else:
-                outval.append(-1)
+                outval.append(0)                                    # Returns 0 if no data
         outlist.append(outval)
 
         
