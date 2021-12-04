@@ -155,7 +155,7 @@ def main():
     for field in fields:
         print(field.name)
 
-    outfields = ['FID_testpoint', 'Shape@XY', 'FID_CA_State_TIGER2016', 'Haz_CODE', 'SA10_2_']
+    outfields = ['FID_testpoint', 'Shape@XY', 'FID_CA_State_TIGER2016', 'HAZ_CODE', 'SA10_2_', 'Reclass']
 
     outpoints = []
 
@@ -192,6 +192,6 @@ def main():
 
 
     # Delete output feature layer when data is extracted - UNCOMMMENT WHEN BUILD COMPLETE
-    arcpy.management.Delete(out_feat)
+    # arcpy.management.Delete(out_feat)
 
     # print(outpoints)
