@@ -1,3 +1,52 @@
+def pointidentity(incsv, workspace, polygonfcs, returnfields, xycols=['x','y'], locationfeat=''):
+    '''This function takes a CSV of x and y coordinates, optionally checks for their presence in an study area polygon, and then appends data to a list of their points
+    based on their position within a series of supplied polygon feature classes.'''
+
+    import arcpy
+    # Set arcpy environment settings to local path + gdb location
+    arcpy.env.workspace = workspace
+    arcpy.env.overwriteOutput = True
+
+    print(arcpy.ListFeatureClasses()) #For debugging, remove when done
+
+    x_coords = xycols[0] # Set x and y coordinate columns from csv
+    y_coords = xycols[1]
+
+    inpoint = "inpoint" # Establish temporary layer names for in feature, intermediate feature, and out feature layers
+    outpoint = "outpoint"
+    interfeat = "in_memory/interpoint" # Set feature to hold temporary intermediate data
+
+    arcpy.management.XYTableToPoint(incsv, inpoint, x_coords, y_coords) # Create XY Event Layer from CSV coordinates
+    
+    if locationfeat:
+        arcpy.analysis.Identity(inpoint, locationfeat, interfeat, 'ONLY_FID') # If a location feature class has been supplied, check if points are within location polygon
+
+    for risk in polygonfcs: # Iterate over points, intersect with each risk layer
+        if risk == polygonfcs[-1]:
+            arcpy.analysis.Identity(interfeat, risk, outpoint, 'NO_FID')
+        else:
+            arcpy.analysis.Identity(interfeat, risk, interfeat + '1', 'NO_FID')
+            interfeat += '1'
+
+    arcpy.management.Delete("in_memory") #Clean-up intermediate layers
+
+    fields = arcpy.ListFields(outpoint) #For debugging
+
+    print(arcpy.ListFeatureClasses()) #For debugging
+
+    for field in fields: #For debugging
+        print(field.name)
+
+    outpoints = []
+    with arcpy.da.SearchCursor(outpoint, returnfields) as cursor:  #Iterate over output feature, pull relevant risk values for each point
+        for row in cursor:
+            outpoints.append(list(row))
+    
+    arcpy.management.Delete(inpoint)
+    arcpy.management.Delete(outpoint)
+
+    return outpoints
+
 def indexcalc(point, weights):
     '''Give a list, 'point', containing data for a point including standardized values for multiple criteria, and a separate list, 'weights' of weighting for each criteria (totalling 100), calculates an index based off of each criteria, redistributing weighting when criterion data not available.'''
     # Assumes that if a point has no data for a specific criteria, that criteria's value will equal -1, otherwise assumes criteria value are standardized.
@@ -112,15 +161,14 @@ def main():
 
 
     # Set arcpy environment settings
-    arcpy.env.workspace = cwd + r"\group4_psp.gdb"
-    arcpy.env.overwriteOutput = True
+    workspace = cwd + r"\group4_psp.gdb"
 
     print(arcpy.ListFeatureClasses())
 
     # Set Local Variables
     # Set the local variables
-    x_coords = "x"
-    y_coords = "y"
+    x = "x"
+    y = "y"
 
     point_feat = "testpoint"
     out_feat = "pointrisks"
@@ -130,43 +178,16 @@ def main():
     floodpoly = 'FloodData'
     quakepoly = 'EarthquakeRisk'
 
-    arcpy.management.XYTableToPoint(in_table, point_feat, x_coords, y_coords) # Create XY Event Layer
-
-    risks = [firepoly, quakepoly, floodpoly] # List of risks under consideration
-
-    interfeat = "in_memory/interfeat" #Feature for intermediate data
-
-    arcpy.analysis.Identity(point_feat, calipoly, interfeat, 'ONLY_FID') # Check if points are within California polygon
-
-    for risk in risks: #Iterate over points, intersect with each risk layer
-        if risk == risks[-1]:
-            arcpy.analysis.Identity(interfeat, risk, out_feat, 'NO_FID')
-        else:
-            arcpy.analysis.Identity(interfeat, risk, interfeat + '1', 'NO_FID')
-            interfeat += '1'
-
-
-    arcpy.management.Delete("in_memory") #Clean-up intermediate layers
-
-    fields = arcpy.ListFields(out_feat)
-
-    print(arcpy.ListFeatureClasses())
-
-    for field in fields:
-        print(field.name)
-
+    risks = [firepoly, quakepoly, floodpoly]
     outfields = ['FID_testpoint', 'Shape@XY', 'FID_CA_State_TIGER2016', 'HAZ_CODE', 'SA10_2_', 'Reclass']
 
-    outpoints = []
+    pointrisks = pointidentity('coords.csv', workspace, risks, outfields, xycols=['x','y'], locationfeat='')
+    
 
-    with arcpy.da.SearchCursor(out_feat, outfields) as cursor:  #Iterate over output feature, pull relevant risk values for each point
-        for row in cursor:
-            outpoints.append(list(row))
-
-    # print(outpoints) - for testing
+    print(pointrisks) # - for testing
 
     outlist = [] #Establish list to contain final calculated values for output
-    for point in outpoints:                                         # Make note of points not in California
+    for point in pointrisks:                                         # Make note of points not in California
         outval = []                                                 # Establish list to contain calculated data for each point
         outval.append(point[0])                                     # Append point FID
         outval.append(point[1])                                     # Append point coordinates
@@ -185,13 +206,11 @@ def main():
                 outval.append(0)                                    # Returns 0 if no data
         outlist.append(outval)
 
+    print(outlist) #For debugging
+    print()
         
     for val in outlist:
         if val[2] != 'Not in California':
             val.append(indexcalc(val[2:], [earthWeight, fireWeight, floodWeight]))
 
-
-    # Delete output feature layer when data is extracted - UNCOMMMENT WHEN BUILD COMPLETE
-    # arcpy.management.Delete(out_feat)
-
-    # print(outpoints)
+    print(outlist) #For debugging
