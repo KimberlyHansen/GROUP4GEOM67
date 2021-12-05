@@ -6,7 +6,6 @@
 #Uses arcpy processes to locate the coordinates with reference to vector data layers each with a hazard ranking that are then used in the weighted calculation for Danger Index
 #Outputs displayed in .txt file and on screen
 
-
 def pointidentity(incsv, workspace, polygonfcs, returnfields, xycols=['x','y'], locationfeat=''):
     '''This function takes a CSV of x and y coordinates, optionally checks for their presence in an study area polygon, and then appends data to a list of their points
     based on their position within a series of supplied polygon feature classes.'''
@@ -55,7 +54,6 @@ def pointidentity(incsv, workspace, polygonfcs, returnfields, xycols=['x','y'], 
     arcpy.management.Delete(outpoint)
 
     return outpoints
-
 
 def indexcalc(point, weights):
     '''Give a list, 'point', containing data for a point including standardized values for multiple criteria, and a separate list, 'weights' of weighting for each criteria (totalling 100), calculates an index based off of each criteria, redistributing weighting when criterion data not available.'''
@@ -177,22 +175,16 @@ def main():
     print(arcpy.ListFeatureClasses())
 
     # Set Local Variables
-    # Set the local variables
-    x = "x"
-    y = "y"
-
-    point_feat = "testpoint"
-    out_feat = "pointrisks"
-
     calipoly = 'CaliStatePoly'
     firepoly = 'CaliFireHazardSeverity'
     floodpoly = 'FloodData'
     quakepoly = 'EarthquakeRisk'
-
+    #Set lists of risks to supply pointidentity function
     risks = [firepoly, quakepoly, floodpoly]
+    #Set list of fields to return data for from pointidentity function
     outfields = ['FID_testpoint', 'Shape@XY', 'FID_CA_State_TIGER2016', 'HAZ_CODE', 'SA10_2_', 'Reclass']
 
-    pointrisks = pointidentity('coords.csv', workspace, risks, outfields, xycols=['x','y'], locationfeat='')
+    pointrisks = pointidentity('coords.csv', workspace, risks, outfields, locationfeat=calipoly)
     
 
     print(pointrisks) # - for testing
