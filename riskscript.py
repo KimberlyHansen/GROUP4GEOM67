@@ -46,6 +46,13 @@ def pointidentity(incsv, workspace, polygonfcs, returnfields, xycols=['x','y'], 
     arcpy.management.Delete(outpoint)
 
     return outpoints
+#RiskScript.py
+#Created By: Ridley Soudack, Jade Lacsamana, Kacy Hyndman, Kimberly Hansen
+#Last Updated: December 5, 2021
+#Calculates Danger Index for homes in California with reference to Earthquake, Fire, and Flood risks.
+#Gets 1 or more x,y coordinates (meters) from either manual keyboard entry or .csv file, and weighting of each of the distaster variables via manual keyboard entry
+#Uses arcpy processes to locate the coordinates with reference to vector data layers each with a hazard ranking that are then used in the weighted calculation for Danger Index
+#Outputs displayed in .txt file and on screen
 
 def indexcalc(point, weights):
     '''Give a list, 'point', containing data for a point including standardized values for multiple criteria, and a separate list, 'weights' of weighting for each criteria (totalling 100), calculates an index based off of each criteria, redistributing weighting when criterion data not available.'''
@@ -74,7 +81,8 @@ def main():
 
     # Display program purpose
     print("California Home Natural Disaster Danger Index Calculator")
-    print("Use this program to calculate a Danger Index for Earthquake, Fire and Flood risk at your location(s) in California")
+    print("Use this program to calculate a Danger Index for Earthquake, Fire and Flood risk at your location(s) in California.")
+    print("Assumptions: This program assumes that the locations entered that are within California are suitable or reasonable locations for a house to exist.")
     print()
     print('************************************************************************************************') 
     print()
@@ -86,7 +94,7 @@ def main():
     input_coordX = []        	
     input_coordY = []    
 
-    if inputSelection.upper() == "M":
+    if inputSelection.upper() == "M":       #Manual inputs section: gets x and y coordinates and appends to an empty list
             
 
         while True:   
@@ -104,33 +112,33 @@ def main():
             input_coordX.append(coordX) # If coordinates are numeric, add to csv.
             input_coordY.append(coordY)
             print()
-            # determine whether user wants to enter another set of input values
+            # determine whether user wants to enter another set of input values. If not, loop ends
             end = str(input("Do you want to stop entering values (Y/N)? "))
             print()
             if  end.upper() == 'Y':
                 break
 
-    else:
+    else:                   #File inputs sections: Reads a .csv file into the program for list of x,y coordinates
         while True:
             print()
-            print('CSV should have header row, X coordinates in first column, Y coordinates in second column.')
+            print('CSV should have header row, X coordinates in first column, Y coordinates in second column.') #Allowing user to upload a file without having to rename it
             in_table = cwd + '/' + input('Please enter your coordinate CSV filename without extension: ') + ".csv"
             if os.path.isfile(in_table): #Checks if file really exists and is CSV.
                 with open(in_table) as filein:
                     inreader = csv.reader(filein)
-                    next(inreader)
+                    next(inreader)  #Skip title row
                     rowskip = 0
                     for row in inreader:
                         coordX_sani = row[0].replace('.','').replace('-','')
                         coordY_sani = row[1].replace('.','').replace('-','')
-                        if (not coordX_sani.isdecimal()) or (not coordY_sani.isdecimal()):
+                        if (not coordX_sani.isdecimal()) or (not coordY_sani.isdecimal()):  #Keeping track of any rows skipped due to improper type
                             rowskip += 1
                         else:
                             input_coordX.append(row[0])
                             input_coordY.append(row[1])
                 print('File successfully read.')
                 if rowskip > 0:
-                    print(f'{rowskip} rows were skipped were skipped due to incorrect formatting.')
+                    print(f'{rowskip} rows were skipped were skipped due to incorrect formatting.') #Allowing user to go back and fix file if a lot of items were skipped
                     end = input('To continue to calculate risk for correctly formatted rows, type "Y", to enter a different CSV, type "N".')
                     if end.upper() == 'Y':
                         break
@@ -141,7 +149,7 @@ def main():
                 print('File not found or not in format .csv, please input correct file name for .csv that exists within the same directory as this script.')
                 print()
 
-    with open('coords.csv', 'w', newline='') as file:
+    with open('coords.csv', 'w', newline='') as file:   #Writing manual input coordinates to a .csv file if manual entry was chosen
         fwriter = csv.writer(file)
         fwriter.writerow(['x', 'y'])
         for iter in range(len(input_coordX)):
@@ -149,7 +157,7 @@ def main():
 
 
     print("Please weight the hazards. Allocate a percentage to each of the three hazards, totaling 100%")
-    while True:
+    while True:                     #Getting a weighting factor for each of the hazards and allowing user to adjust if they do not meet requirements
         earthWeight= int(input("\tEarthquake Shaking Potential: "))
         fireWeight=  int(input("\tFire Hazard Severity Zone Rating: "))
         floodWeight= int(input("\tFlood Hazard: "))
@@ -214,3 +222,11 @@ def main():
             val.append(indexcalc(val[2:], [earthWeight, fireWeight, floodWeight]))
 
     print(outlist) #For debugging
+
+    # Delete output feature layer when data is extracted - UNCOMMMENT WHEN BUILD COMPLETE
+    # arcpy.management.Delete(out_feat)
+
+    # print(outpoints)
+
+if __name__ == '__main__':
+    main()
