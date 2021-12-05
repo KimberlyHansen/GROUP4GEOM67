@@ -123,7 +123,7 @@ def main():
         while True:
             print()
             print('CSV should have header row, X coordinates in first column, Y coordinates in second column.') #Allowing user to upload a file without having to rename it
-            in_table = cwd + '/' + input('Please enter your coordinate CSV filename without extension: ') + ".csv"
+            in_table = cwd + '/' + input('\tPlease enter your coordinate CSV filename without extension: ') + ".csv"
             if os.path.isfile(in_table): #Checks if file really exists and is CSV.
                 with open(in_table) as filein:
                     inreader = csv.reader(filein)
