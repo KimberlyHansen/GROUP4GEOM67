@@ -4,7 +4,7 @@
 #Calculates Danger Index for homes in California with reference to Earthquake, Fire, and Flood risks.
 #Gets 1 or more x,y coordinates (meters) from either manual keyboard entry or .csv file, and weighting of each of the distaster variables via manual keyboard entry
 #Uses arcpy processes to locate the coordinates with reference to vector data layers each with a hazard ranking that are then used in the weighted calculation for Danger Index
-#Outputs displayed in .csv file and on screen
+#Outputs displayed in .txt file and on screen
 
 def indexcalc(point, weights):
     '''Give a list, 'point', containing data for a point including standardized values for multiple criteria, and a separate list, 'weights' of weighting for each criteria (totalling 100), calculates an index based off of each criteria, redistributing weighting when criterion data not available.'''
