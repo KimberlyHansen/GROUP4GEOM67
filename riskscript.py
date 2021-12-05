@@ -6,7 +6,7 @@
 #Uses arcpy processes to locate the coordinates with reference to vector data layers each with a hazard ranking that are then used in the weighted calculation for Danger Index
 #Outputs displayed in .txt file and on screen
 
-def pointidentity(incsv, workspace, polygonfcs, returnfields, xycols=['x','y'], locationfeat=''):
+def pointidentity(incsv, workspace, polygonfcs, returnfields, spatialref, xycols=['x','y'], locationfeat=''):
     '''This function takes a CSV of x and y coordinates, optionally checks for their presence in an study area polygon, and then appends data to a list of their points
     based on their position within a series of supplied polygon feature classes.'''
 
@@ -24,7 +24,7 @@ def pointidentity(incsv, workspace, polygonfcs, returnfields, xycols=['x','y'], 
     outpoint = "outpoint"
     interfeat = "in_memory/interpoint" # Set feature to hold temporary intermediate data
 
-    arcpy.management.XYTableToPoint(incsv, inpoint, x_coords, y_coords) # Create XY Event Layer from CSV coordinates
+    arcpy.management.XYTableToPoint(incsv, inpoint, x_coords, y_coords, coordinate_system=spatialref) # Create XY Event Layer from CSV coordinates
     
     if locationfeat:
         arcpy.analysis.Identity(inpoint, locationfeat, interfeat, 'ONLY_FID') # If a location feature class has been supplied, check if points are within location polygon
@@ -175,6 +175,7 @@ def main():
     print(arcpy.ListFeatureClasses())
 
     # Set Local Variables
+    coordinatesystem = arcpy.SpatialReference(3310)
     calipoly = 'CaliStatePoly'
     firepoly = 'CaliFireHazardSeverity'
     floodpoly = 'FloodData'
@@ -182,9 +183,9 @@ def main():
     #Set lists of risks to supply pointidentity function
     risks = [firepoly, quakepoly, floodpoly]
     #Set list of fields to return data for from pointidentity function
-    outfields = ['FID_testpoint', 'Shape@XY', 'FID_CA_State_TIGER2016', 'HAZ_CODE', 'SA10_2_', 'Reclass']
+    outfields = ['FID_inpoint', 'Shape@XY', 'FID_CaliStatePoly', 'HAZ_CODE', 'SA10_2_', 'Reclass']
 
-    pointrisks = pointidentity('coords.csv', workspace, risks, outfields, locationfeat=calipoly)
+    pointrisks = pointidentity(cwd + r'\coords.csv', workspace, risks, outfields, coordinatesystem, locationfeat=calipoly)
     
 
     print(pointrisks) # - for testing
@@ -200,7 +201,6 @@ def main():
             # Identity returns areas where there is no data as '0', which are kept as 0 with the following formulas
             outval.append(round((float(point[3]) / 3) * 10))        # Converts fire risk value to value out of 10
             outval.append(round((float(point[4]) / 2.15) * 10))     # Converts earthquake risk value to value out of 10
-            outval.append(-1)
             if point[5] == 2:                                       # Returns 10 if point within flood plain, returns 1 if not.
                 outval.append(10)
             elif point[5] == 1:
