@@ -25,7 +25,8 @@ def main():
 
     # Display program purpose
     print("California Home Natural Disaster Danger Index Calculator")
-    print("Use this program to calculate a Danger Index for Earthquake, Fire and Flood risk at your location(s) in California")
+    print("Use this program to calculate a Danger Index for Earthquake, Fire and Flood risk at your location(s) in California.")
+    print("Assumptions: This program assumes that the locations entered that are within California are suitable or reasonable locations for a house to exist.")
     print()
     print('************************************************************************************************') 
     print()
@@ -195,3 +196,6 @@ def main():
     # arcpy.management.Delete(out_feat)
 
     # print(outpoints)
+
+if __name__ == '__main__':
+    main()
