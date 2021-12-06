@@ -221,11 +221,6 @@ def main():
 
     print(outlist) #For debugging
 
-    # Delete output feature layer when data is extracted - UNCOMMMENT WHEN BUILD COMPLETE
-    # arcpy.management.Delete(out_feat)
-
-    # print(outpoints)
-    # outlist = [[1, (119.9970000013709, 20.000900000333786), 0, 1, 0, 1], [1, (10000000000.0, 1.0), 'Not in California', '', '', '']]
 
     print('************************************************************************************************') 
     print()
