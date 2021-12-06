@@ -231,19 +231,20 @@ def main():
     print()
     print("California Home Natural Disaster Danger Index:")
     for item in outlist:
-        print("At the location " + str(item[1]) + ":")
-        print("\tThe Earthquake Shaking Potential is:          " + str(item[2]) + " /10")
-        print("\tThe Fire Hazard Severity Zone Rating is:      " + str(item[3]) + " /10")
-        print("\tFlood Plain Presence:                         " + str(item[4]))
-        print("\tThe Danger Index is:                          " + str(item[5]) + " /10")
-        print()
+        if item[5] == 'Not in California':
+            print(f'The location {str(item[1])} is not in california')
+        else:
+            print("At the location " + str(item[1]) + ":")
+            print("\tThe Earthquake Shaking Potential is:          " + str(item[2]) + " /10")
+            print("\tThe Fire Hazard Severity Zone Rating is:      " + str(item[3]) + " /10")
+            print("\tFlood Plain Presence:                         " + str(item[4]))
+            print("\tThe Danger Index is:                          " + str(item[5]) + " /10")
+            print()
 
     with open('CaliDangerIndex.txt', 'w') as file:
         file.write(f": {'FeatureID':10} : {'X':20} : {'Y':20} : {'Fire Risk':20} : {'Earthquake Risk':20} : {'Flood risk':20} : {'Danger Index':20} :\n")
         for item in outlist:
             file.write(f": {item[0]:10} : {round(item[1][0]):20} : {round(item[1][1]):20} : {item[2]:20} : {item[3]:20} : {item[4]:20} : {item[5]:20} :\n")
-
-
 
 if __name__ == '__main__':
     main()
