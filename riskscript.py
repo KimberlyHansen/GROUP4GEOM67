@@ -214,12 +214,17 @@ def main():
 
     print(outlist) #For debugging
 
-    finallist = [x if x != 0 else 'No Data' for x in outlist] #This list comprehension replaces all 0 values with 'No Data' for clarity in output
+    finallist = []#Define final list, to be used in console display and final text file.
+
+    for iter in range(len(outlist)):
+        if len(outlist[iter]) < 6: # All points noted as 'Not in California' will have length = 6, so this if only calculates indices for points within California.
+            outlist[iter].append(round(indexcalc(outlist[iter][2:], [earthWeight, fireWeight, floodWeight])))
+            finallist.append([x if x != 0 else 'No Data' for x in outlist[iter]])#This list comprehension replaces all 0 values with 'No Data' for clarity in output
 
     print('************************************************************************************************') 
     print()
     print("California Home Natural Disaster Danger Index:")
-    for item in outlist:
+    for item in finallist:
         if item[5] == 'Not in California':
             print(f'The location {str(item[1])} is not in california')
         else:
@@ -228,11 +233,15 @@ def main():
             print("\tThe Fire Hazard Severity Zone Rating is:      " + str(item[3]) + " /10")
             print("\tFlood Plain Presence:                         " + str(item[4]))
             print("\tThe Danger Index is:                          " + str(item[5]) + " /10")
+            if ('No Data' in item):
+                print("NOTE: Risk data unavailable for one or more risks at this location. Danger index calculated based on redistribution of weighting to remaining risks.")
+                print('However, in this case, Danger Index does not necessarily capture full danger associated with location.')
             print()
 
     with open('CaliDangerIndex.txt', 'w') as file:
+        file.write("Note: Weighting for points with unavailable risk data is equally redistributed between values for remaining risk(s) when calculating Danger Index.")
         file.write(f": {'FeatureID':10} : {'X':20} : {'Y':20} : {'Fire Risk':20} : {'Earthquake Risk':20} : {'Flood risk':20} : {'Danger Index':20} :\n")
-        for item in outlist:
+        for item in finallist:
             file.write(f": {item[0]:10} : {round(item[1][0]):20} : {round(item[1][1]):20} : {item[2]:20} : {item[3]:20} : {item[4]:20} : {item[5]:20} :\n")
 
 if __name__ == '__main__':
