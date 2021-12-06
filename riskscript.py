@@ -123,7 +123,7 @@ def main():
         while True:
             print()
             print('CSV should have header row, X coordinates in first column, Y coordinates in second column.') #Allowing user to upload a file without having to rename it
-            in_table = cwd + '/' + input('\tPlease enter your coordinate CSV filename without extension: ') + ".csv"
+            in_table = cwd + '/' + input('Please enter your coordinate CSV filename without extension: ') + ".csv"
             if os.path.isfile(in_table): #Checks if file really exists and is CSV.
                 with open(in_table) as filein:
                     inreader = csv.reader(filein)
@@ -140,7 +140,7 @@ def main():
                 print('File successfully read.')
                 if rowskip > 0:
                     print(f'{rowskip} rows were skipped were skipped due to incorrect formatting.') #Allowing user to go back and fix file if a lot of items were skipped
-                    end = input('To continue to calculate risk for correctly formatted rows, type "Y", to enter a different CSV, type "N".')
+                    end = input('To continue to calculate risk for correctly formatted rows, type "Y", to enter a different CSV, type "N": ')
                     if end.upper() == 'Y':
                         break
                 else:
@@ -214,7 +214,7 @@ def main():
         
     for val in outlist:
         if val[2] != 'Not in California':
-            val.append(indexcalc(val[2:], [earthWeight, fireWeight, floodWeight]))
+            val.append(round(indexcalc(val[2:], [earthWeight, fireWeight, floodWeight])))
 
     print(outlist) #For debugging
 
