@@ -214,16 +214,19 @@ def main():
 
     print(outlist) #For debugging
 
+    finallist = [x if x != 0 else 'No Data' for x in outlist] #This list comprehension replaces all 0 values with 'No Data' for clarity in output
 
     print('************************************************************************************************') 
     print()
     print("California Home Natural Disaster Danger Index:")
-    for item in outlist:
+    for item in finallist:
         print("At the location " + str(item[1]) + ":")
         print("\tThe Earthquake Shaking Potential is:          " + str(item[2]) + " /10")
         print("\tThe Fire Hazard Severity Zone Rating is:      " + str(item[3]) + " /10")
         print("\tFlood Plain Presence:                         " + str(item[4]))
         print("\tThe Danger Index is:                          " + str(item[5]) + " /10")
+        if ('No Data' in item):
+            print("NOTE: Weighting for 'No Data' risk(s) redistributed equally to other risk(s).")
         print()
 
     with open('CaliDangerIndex.txt', 'w') as file:
