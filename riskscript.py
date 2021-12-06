@@ -7,7 +7,7 @@
 #Outputs displayed in .txt file and on screen
 
 def pointidentity(incsv, workspace, polygonfcs, returnfields, spatialref, xycols=['x','y'], locationfeat=''):
-    '''This function takes a CSV of x and y coordinates, optionally checks for their presence in an study area polygon, and then appends data to a list of their points
+    '''This function takes a CSV of x and y coordinates, optionally checks for their presence in a study area polygon, and then appends data to a list of their points
     based on their position within a series of supplied polygon feature classes.'''
 
     import arcpy
