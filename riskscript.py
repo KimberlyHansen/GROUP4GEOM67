@@ -139,7 +139,7 @@ def main():
                             input_coordY.append(row[1])
                 print('File successfully read.')
                 if rowskip > 0:
-                    print(f'{rowskip} rows were skipped were skipped due to incorrect formatting.') #Allowing user to go back and fix file if a lot of items were skipped
+                    print(f'{rowskip} rows were skipped due to incorrect formatting.') #Allowing user to go back and fix file if a lot of items were skipped
                     end = input('To continue to calculate risk for correctly formatted rows, type "Y", to enter a different CSV, type "N": ')
                     if end.upper() == 'Y':
                         break
@@ -222,7 +222,7 @@ def main():
         if item[5] == 'Not in California':
             print(f'The location {str(item[1])} is not in california')
         else:
-            print("At the location " + str(item[1]) + ":")
+            print(f'At the location {round(item[1][0])}, {round(item[1][1])}:')
             print("\tThe Earthquake Shaking Potential is:          " + str(item[2]) + " /10")
             print("\tThe Fire Hazard Severity Zone Rating is:      " + str(item[3]) + " /10")
             print("\tFlood Plain Presence:                         " + str(item[4]))
