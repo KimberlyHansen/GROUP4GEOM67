@@ -172,8 +172,6 @@ def main():
     # Set arcpy environment settings
     workspace = cwd + r"\group4_psp.gdb"
 
-    print(arcpy.ListFeatureClasses())
-
     # Set Local Variables
     coordinatesystem = arcpy.SpatialReference(3310)
     calipoly = 'CaliStatePoly'
@@ -187,8 +185,6 @@ def main():
 
     pointrisks = pointidentity(cwd + r'\coords.csv', workspace, risks, outfields, coordinatesystem, locationfeat=calipoly)
     
-
-    print(pointrisks) # - for testing
 
     outlist = [] #Establish list to contain final calculated values for output
     for point in pointrisks:                                         # Make note of points not in California
@@ -211,9 +207,6 @@ def main():
             else:
                 outval.append(0)                                    # Returns 0 if no data
         outlist.append(outval)
-
-    print(outlist) #For debugging
-    print()
         
     for val in outlist:
         if len(val) < 6:
@@ -221,11 +214,6 @@ def main():
 
     print(outlist) #For debugging
 
-    # Delete output feature layer when data is extracted - UNCOMMMENT WHEN BUILD COMPLETE
-    # arcpy.management.Delete(out_feat)
-
-    # print(outpoints)
-    # outlist = [[1, (119.9970000013709, 20.000900000333786), 0, 1, 0, 1], [1, (10000000000.0, 1.0), 'Not in California', '', '', '']]
 
     print('************************************************************************************************') 
     print()
