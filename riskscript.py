@@ -196,6 +196,9 @@ def main():
         outval.append(point[0])                                     # Append point FID
         outval.append(point[1])                                     # Append point coordinates
         if point[2] == -1:                                          # Check if point was in California, append message if not.
+            outval.append('')
+            outval.append('')
+            outval.append('')
             outval.append('Not in California')
         else:                                                       # Standardize criteria values for each risk:
             # Identity returns areas where there is no data as '0', which are kept as 0 with the following formulas
@@ -213,7 +216,7 @@ def main():
     print()
         
     for val in outlist:
-        if val[2] != 'Not in California':
+        if len(val) < 6:
             val.append(round(indexcalc(val[2:], [earthWeight, fireWeight, floodWeight])))
 
     print(outlist) #For debugging
