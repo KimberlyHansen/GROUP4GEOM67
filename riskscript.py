@@ -218,7 +218,7 @@ def main():
 
     for iter in range(len(outlist)):
         if len(outlist[iter]) < 6: # All points noted as 'Not in California' will have length = 6, so this if only calculates indices for points within California.
-            outlist[iter].append(round(indexcalc(outlist[iter][2:], [earthWeight, fireWeight, floodWeight])))
+            outlist[iter].append(round(indexcalc(outlist[iter][2:], [earthWeight, fireWeight, floodWeight]))) # Calculate Danger index for each point and append to point list.
             finallist.append([x if x != 0 else 'No Data' for x in outlist[iter]])#This list comprehension replaces all 0 values with 'No Data' for clarity in output
 
     print('************************************************************************************************') 
