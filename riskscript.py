@@ -139,7 +139,7 @@ def main():
                             input_coordY.append(row[1])
                 print('File successfully read.')
                 if rowskip > 0:
-                    print(f'{rowskip} rows were skipped were skipped due to incorrect formatting.') #Allowing user to go back and fix file if a lot of items were skipped
+                    print(f'{rowskip} rows were skipped due to incorrect formatting.') #Allowing user to go back and fix file if a lot of items were skipped
                     end = input('To continue to calculate risk for correctly formatted rows, type "Y", to enter a different CSV, type "N": ')
                     if end.upper() == 'Y':
                         break
@@ -219,22 +219,21 @@ def main():
     print('************************************************************************************************') 
     print()
     print("California Home Natural Disaster Danger Index:")
-    for item in finallist:
-        print("At the location " + str(item[1]) + ":")
-        print("\tThe Earthquake Shaking Potential is:          " + str(item[2]) + " /10")
-        print("\tThe Fire Hazard Severity Zone Rating is:      " + str(item[3]) + " /10")
-        print("\tFlood Plain Presence:                         " + str(item[4]))
-        print("\tThe Danger Index is:                          " + str(item[5]) + " /10")
-        if ('No Data' in item):
-            print("NOTE: Weighting for 'No Data' risk(s) redistributed equally to other risk(s).")
-        print()
+    for item in outlist:
+        if item[5] == 'Not in California':
+            print(f'The location {str(item[1])} is not in california')
+        else:
+            print(f'At the location {round(item[1][0])}, {round(item[1][1])}:')
+            print("\tThe Earthquake Shaking Potential is:          " + str(item[2]) + " /10")
+            print("\tThe Fire Hazard Severity Zone Rating is:      " + str(item[3]) + " /10")
+            print("\tFlood Plain Presence:                         " + str(item[4]))
+            print("\tThe Danger Index is:                          " + str(item[5]) + " /10")
+            print()
 
     with open('CaliDangerIndex.txt', 'w') as file:
         file.write(f": {'FeatureID':10} : {'X':20} : {'Y':20} : {'Fire Risk':20} : {'Earthquake Risk':20} : {'Flood risk':20} : {'Danger Index':20} :\n")
         for item in outlist:
             file.write(f": {item[0]:10} : {round(item[1][0]):20} : {round(item[1][1]):20} : {item[2]:20} : {item[3]:20} : {item[4]:20} : {item[5]:20} :\n")
-
-
 
 if __name__ == '__main__':
     main()
